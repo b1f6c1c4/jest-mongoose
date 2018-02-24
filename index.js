@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const logger = require('./logger');
+const { mer } = require('./merge');
 
 const thrower = (model) => {
   logger.info('Hacking model', model.modelName);
@@ -54,29 +55,6 @@ const thrower = (model) => {
   return (th) => {
     toThrow = th;
   };
-};
-
-const superMerge = (base, objs) => {
-  for (let i = 0; i < objs.length;) {
-    const o = objs[i];
-    if (typeof o === 'string') {
-      if (!o.startsWith('-')) {
-        const target = i < objs.length - 1 ? objs[i + 1] : undefined;
-        _.set(base, o, target);
-        i += 2;
-      } else {
-        _.unset(base, o.substr(1));
-        i += 1;
-      }
-    } else if (typeof o === 'object') {
-      _.assignIn(base, _.cloneDeep(o));
-      i += 1;
-    } else {
-      logger.error('Super merge', o);
-      i += 1;
-    }
-  }
-  return base;
 };
 
 module.exports = (models, connect) => {
@@ -164,8 +142,6 @@ module.exports = (models, connect) => {
       expect(undefined).toEqual(os[id]);
     });
   };
-
-  const mer = (base, ...os) => superMerge(_.isArray(base) ? [] : {}, [base, ...os]);
 
   const check = _.mapValues(models, (M) => (...args) => {
     const obj = mer(...args);

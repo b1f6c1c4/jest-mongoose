@@ -1,4 +1,4 @@
-const { superMerge, mer } = require('../index')({});
+const { superMerge, mer } = require('../merge');
 
 describe('superMerge', () => {
   it('should accept zero', () => {
@@ -25,19 +25,50 @@ describe('superMerge', () => {
     expect(superMerge({ a: [5, 6], c: { d: { e: 3 } } }, [
       '-c.d.e',
       '-a[0]',
-    ])).toEqual({ a: [undefined, 6], c: { d: {} } });
+    ])).toEqual({ a: [, 6], c: { d: {} } });
   });
   it('should accept index string', () => {
     expect(superMerge({ a: 1 }, [
       'z[1]', { q: 1 },
       'a.b', 0,
-    ])).toEqual({ a: { b: 0 }, z: [undefined, { q: 1 }] });
+    ])).toEqual({ a: { b: 0 }, z: [, { q: 1 }] });
   });
   it('should accept array replace', () => {
     expect(superMerge({ a: 1 }, [
       { a: [1, 2] },
       { a: [[3]] },
     ])).toEqual({ a: [[3]] });
+  });
+  it('should accept array partial replace', () => {
+    expect(superMerge({ a: [1, 5, 7], b: [1, 2], c: [4, 5, 6] }, [
+      { a: [3, ], b: [, 5], c: [7, , 9] },
+    ])).toEqual({ a: [3, ], b: [1, 5], c: [7, , 9] });
+  });
+  it('should accept array partial replace object', () => {
+    expect(superMerge({ b: [1, { x: 1, y: 2 }] }, [
+      { b: [, { x: 2 }] },
+    ])).toEqual({ b: [1, { x: 2, y: 2 }] });
+  });
+  it('should accept array partial replace twice', () => {
+    expect(superMerge({ a: [1, 5, [1, 2]] }, [
+      { a: [3, , , ] }, // Mind the trailing comma
+      { a: [, , [, 5]] },
+    ])).toEqual({ a: [3, 5, [1, 5]] });
+  });
+  it('should accept global array', () => {
+    expect(superMerge([1, { x: 1, y: 2 }], [
+      [123, { x: 2 }],
+    ])).toEqual([123, { x: 2 }]);
+  });
+  it('should accept global array 2', () => {
+    expect(superMerge([1, { x: 1, y: 2 }], [
+      [123, { x: 2 }, 'evil'],
+    ])).toEqual([123, { x: 2 }, 'evil']);
+  });
+  it('should accept global array partial replace', () => {
+    expect(superMerge([1, { x: 1, y: 2 }], [
+      [, { x: 2 }],
+    ])).toEqual([1, { x: 2, y: 2 }]);
   });
 });
 
@@ -52,6 +83,12 @@ describe('mer', () => {
     const obj = { a: { b: 1 } };
     expect(mer(obj, 'a.b', 2)).toEqual({ a: { b: 2 } });
     expect(mer(obj, 'c', 3)).toEqual({ a: { b: 1 }, c: 3 });
+  });
+  it('should use new deep object for array partial replace', () => {
+    const base = { a: [1, 2, 3] };
+    const obj = { a: [, , { b: 1 }] };
+    expect(mer(base, obj, 'a.[2].b', 2)).toEqual({ a: [1, 2, { b: 2 }]});
+    expect(mer(base, obj, 'a.[1]', 3)).toEqual({ a: [1, 3, { b: 1 }]});
   });
   it('should support array', () => {
     const obj = [1, 2, 3];
