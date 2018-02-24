@@ -90,9 +90,32 @@ describe('mer', () => {
     expect(mer(base, obj, 'a.[2].b', 2)).toEqual({ a: [1, 2, { b: 2 }]});
     expect(mer(base, obj, 'a.[1]', 3)).toEqual({ a: [1, 3, { b: 1 }]});
   });
+  it('should use new deep object for array', () => {
+    const base = [{ a: 1 }, { b: {} }];
+    const obj = [, { b: { c: 3 } }];
+    expect(mer(base, '[0].c', 4)).toEqual([{ a: 1, c: 4 }, { b: {} }]);
+    expect(mer(base, obj)).toEqual([{ a: 1 }, { b: { c: 3 } }]);
+  });
   it('should support array', () => {
     const obj = [1, 2, 3];
     expect(mer(obj, '[1]', 4)).toEqual([1, 4, 3]);
-    expect(mer(obj, ['a'])).toEqual(['a', 2, 3]);
+    expect(mer(obj, ['a'])).toEqual(['a']);
+  });
+  it('should support array deep', () => {
+    const obj = [
+      1,
+      { a: { b: 1 } },
+    ];
+    expect(mer(obj, '[1].a.b', 4)).toEqual([
+      1,
+      { a: { b: 4 } },
+    ]);
+    expect(mer(obj, '[0]', 88)).toEqual([
+      88,
+      { a: { b: 1 } },
+    ]);
+    expect(mer(obj, ['a'])).toEqual([
+      'a',
+    ]);
   });
 });
