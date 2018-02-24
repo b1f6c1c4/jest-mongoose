@@ -32,7 +32,7 @@ describe('createUser', () => {
     const result = await createUser();
     // Check the return value
     expect(result).toBeInstanceOf(Error);
-    // Check the previous record in intact
+    // Check the previous record is intact
     await check.User({
       _id: 'the-id',
       name: 'my-name-is-evil',
