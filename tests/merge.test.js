@@ -1,4 +1,4 @@
-const { superMerge, mer } = require('./util');
+const { superMerge, mer } = require('../index')({});
 
 describe('superMerge', () => {
   it('should accept zero', () => {
