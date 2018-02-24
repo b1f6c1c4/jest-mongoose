@@ -1,0 +1,17 @@
+{
+  "name": "jest-mongoose-example",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --runInBand"
+  },
+  "author": "b1f6c1c4 <b1f6c1c4@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^5.0.0"
+  },
+  "devDependencies": {
+    "jest-cli": "^22.4.0"
+  }
+}
