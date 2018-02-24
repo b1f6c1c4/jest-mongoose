@@ -86,8 +86,8 @@ module.exports = (models, connect) => {
     M.checkOn = (verb) => M.thrower({
       [verb]: false,
     });
-    M.throwErrOn = (verb) => M.thrower({
-      [verb]: new Error('Some error'),
+    M.throwErrOn = (verb, msg) => M.thrower({
+      [verb]: new Error(msg || 'jest-mongoose Error'),
     });
   });
 
@@ -125,26 +125,64 @@ module.exports = (models, connect) => {
     return doc.toObject();
   });
 
-  const check = _.mapValues(models, (M) => async (...os) => {
+  const nullCheck = async (M) => {
+    const count = await M.count();
+    expect(count).toEqual(0);
+  };
+
+  const simpleCheck = async (M, o) => {
     const docs = await M.find({});
-    if (os.length === 0) {
-      expect(docs.length).toEqual(0);
-    } else {
-      const o = superMerge({}, os);
-      expect(docs.length).toEqual(1);
-      const ox = docs[0].toObject();
-      delete ox.__v;
-      delete ox.createdAt;
-      delete ox.updatedAt;
-      expect(ox).toEqual(o);
+    expect(docs.length).toEqual(1);
+    const ox = docs[0].toObject();
+    delete ox.__v;
+    delete ox.createdAt;
+    delete ox.updatedAt;
+    expect(ox).toEqual(o);
+  };
+
+  const multipleCheck = async (M, os) => {
+    if (!os.every((o) => o._id !== undefined)) {
+      throw new Error('jest-mockgoose: multiple check must have _id');
     }
+    const docs = await M.find({});
+    const found = _.fill(Array(os.length), false);
+    docs.forEach((doc) => {
+      const id = os.findIndex((o) => doc._id === o._id);
+      if (id === -1) {
+        expect(doc).toEqual(undefined);
+      } else {
+        const ox = doc.toObject();
+        delete ox.__v;
+        delete ox.createdAt;
+        delete ox.updatedAt;
+        expect(ox).toEqual(os[id]);
+        found[id] = true;
+      }
+    });
+    found.forEach((f, id) => {
+      if (f) return;
+      expect(undefined).toEqual(os[id]);
+    });
+  };
+
+  const mer = (base, ...os) => superMerge(_.isArray(base) ? [] : {}, [base, ...os]);
+
+  const check = _.mapValues(models, (M) => (...args) => {
+    const obj = mer(...args);
+    if (!obj) {
+      return nullCheck(M);
+    }
+    if (_.isArray(obj)) {
+      return multipleCheck(M, obj);
+    }
+    return simpleCheck(M, obj);
   });
 
   return {
     superMerge,
     models,
-    mer: (base, ...os) => superMerge(Array.isArray(base) ? [] : {}, [base, ...os]),
     make,
+    mer,
     check,
   };
 };
