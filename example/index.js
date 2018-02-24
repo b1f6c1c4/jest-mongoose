@@ -2,7 +2,7 @@ const mongo = require('./mongo');
 const {
   createUser,
   modifyUser,
-  countUsers,
+  deleteUser,
   aggregateUsers,
 } = require('./userManagement');
 

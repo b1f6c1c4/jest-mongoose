@@ -6,15 +6,12 @@ const UserSchema = new Schema({
   _id: {
     type: String,
   },
-  hash: {
+  name: {
     type: String,
+    default: 'default-name',
   },
 }, {
   id: false,
-  shardKey: {
-    _id: 1,
-  },
-  timestamps: { },
 });
 
 module.exports = mongoose.model('users', UserSchema);

@@ -11,20 +11,20 @@ const createUser = async () => {
   }
 };
 
-const modifyUser = async () => {
+const modifyUser = async ({ id, name }) => {
   try {
-    const user = await User.findById('the-id');
-    user.name = 'new-name';
+    const user = await User.findById(id);
+    user.name = name;
     await user.save();
   } catch (err) {
     return err;
   }
 };
 
-const countUsers = async () => {
+const deleteUser = async ({ id }) => {
   try {
-    const count = await User.count();
-    return count;
+    const user = await User.findById(id);
+    await user.remove();
   } catch (err) {
     return err;
   }
@@ -52,7 +52,7 @@ const aggregateUsers = async () => {
 module.exports = {
   createUser,
   modifyUser,
-  countUsers,
+  deleteUser,
   aggregateUsers,
 };
 
