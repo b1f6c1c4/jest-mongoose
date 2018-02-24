@@ -96,11 +96,26 @@ module.exports = (models, connect) => {
     done();
   });
 
-  const make = _.mapValues(models, (M) => async (...os) => {
-    const doc = new M();
-    doc.set(superMerge({}, os));
-    await doc.save();
-    return doc.toObject();
+  const make = _.mapValues(models, (M) => async (...args) => {
+    let os = mer(...args);
+    const strip = !_.isArray(os);
+    if (strip) {
+      os = [os];
+    }
+    const results = await Promise.all(os.map(async (o) => {
+      const doc = new M();
+      doc.set(o);
+      await doc.save();
+      const ox = doc.toObject();
+      delete ox.__v;
+      delete ox.createdAt;
+      delete ox.updatedAt;
+      return ox;
+    }));
+    if (strip) {
+      return results[0];
+    }
+    return results;
   });
 
   const nullCheck = async (M) => {
@@ -144,10 +159,10 @@ module.exports = (models, connect) => {
   };
 
   const check = _.mapValues(models, (M) => (...args) => {
-    const obj = mer(...args);
-    if (!obj) {
+    if (!args.length) {
       return nullCheck(M);
     }
+    const obj = mer(...args);
     if (_.isArray(obj)) {
       return multipleCheck(M, obj);
     }
@@ -155,7 +170,6 @@ module.exports = (models, connect) => {
   });
 
   return {
-    superMerge,
     models,
     make,
     mer,
