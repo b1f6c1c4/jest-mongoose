@@ -1,10 +1,18 @@
 const mongo = require('./mongo');
-const { User } = require('./models/users');
-const { createUser, modifyUser } = require('./userManagement');
+const {
+  createUser,
+  modifyUser,
+  countUsers,
+  aggregateUsers,
+} = require('./userManagement');
 
 mongo.connect()
-  .then(createUser)
-  .then(modifyUser)
+  .then(() => {
+    // you may setup express.js here
+    // and call functions /.*Users?/
+    // in express request handlers.
+    console.log('Hello world!');
+  })
   .catch((e) => {
     console.error(e);
   });

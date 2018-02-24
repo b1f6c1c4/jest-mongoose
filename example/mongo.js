@@ -5,10 +5,12 @@ module.exports.connect = () => new Promise((resolve, reject) => {
   const dbName = 'jest-mongoose-demo';
 
   mongoose.connection.on('connected', () => {
+    console.log('Mongodb connected!');
     resolve();
   });
 
   try {
+    console.log(`Connecting ${host}/${dbName}`);
     mongoose.connect(`mongodb://${host}:27017/${dbName}`, {
       autoReconnect: true,
       reconnectTries: 0,
