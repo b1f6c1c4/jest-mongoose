@@ -16,11 +16,50 @@ const thrower = (model) => {
     'findOneAndRemove',
     'findOneAndUpdate',
     'update',
-    'aggregate',
+    'replaceOne',
+    'updateMany',
+    'updateOne',
   ];
   verbs1.forEach((verb) => {
     logger.trace('Inject hacker for schema', verb);
-    model.schema.s.hooks.pre(verb, function (next) {
+    const v = `$__${verb}`;
+    const raw = model.prototype[v];
+    model.prototype[v] = function schemaMock(options, callback) {
+      logger.trace('Verb called, hack now', verb);
+      const obj = _.get(toThrow, verb);
+      if (obj !== undefined) {
+        logger.warn('Hacked by', obj);
+        expect(verb).toEqual(verb);
+      }
+      if (obj) {
+        callback(obj);
+      } else {
+        raw.call(this, options, callback);
+      }
+    };
+  });
+  verbs2.forEach((verb) => {
+    logger.trace('Inject hacker for model', verb);
+    const v = verb === 'update' ? '_execUpdate' : `_${verb}`;
+    const raw = model.Query.prototype[v];
+    model.Query.prototype[v] = function modelMock(callback) {
+      logger.trace('Verb called, hack now', verb);
+      const obj = _.get(toThrow, verb);
+      if (obj !== undefined) {
+        logger.warn('Hacked by', obj);
+        expect(this.op).toEqual(verb);
+      }
+      if (obj) {
+        callback(obj);
+      } else {
+        raw.call(this, callback);
+      }
+    };
+  });
+  {
+    const verb = 'aggregate';
+    logger.trace('Inject hacker for model', verb);
+    model.hooks.pre(verb, function modelHook(next) {
       logger.trace('Verb called, hack now', verb);
       const obj = _.get(toThrow, verb);
       if (obj !== undefined) {
@@ -33,25 +72,8 @@ const thrower = (model) => {
         next();
       }
     });
-  });
-  verbs2.forEach((verb) => {
-    logger.trace('Inject hacker for model', verb);
-    model.hooks.pre(verb, function (next) {
-      logger.trace('Verb called, hack now', verb);
-      const obj = _.get(toThrow, verb);
-      if (obj !== undefined) {
-        logger.warn('Hacked by', obj);
-        if (verb !== 'aggregate') {
-          expect(this.op).toEqual(verb);
-        }
-      }
-      if (obj) {
-        next(obj);
-      } else {
-        next();
-      }
-    });
-  });
+  }
+
   return (th) => {
     toThrow = th;
   };

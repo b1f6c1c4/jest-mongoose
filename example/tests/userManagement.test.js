@@ -94,6 +94,14 @@ describe('modifyUser', () => {
     done();
   });
 
+  it('should handle error', async (done) => {
+    models.User.throwErrOn('findOne', 'not funny');
+    const res = await modifyUser(dArgs);
+    expect(res).toBeInstanceOf(Error);
+    expect(res.message).toEqual('not funny');
+    done();
+  });
+
   it('should handle not found case 1', async (done) => {
     await make.User(dUser);
     // It's also possible to use this syntax in your logic
@@ -138,6 +146,15 @@ describe('deleteUser', () => {
     await check.User([]);
     done();
   });
+
+  it('should handle error', async (done) => {
+    await make.User(dUser);
+    models.User.throwErrOn('remove', 'itst');
+    const res = await deleteUser({ id: 'id' });
+    expect(res).toBeInstanceOf(Error);
+    expect(res.message).toEqual('itst');
+    done();
+  });
 });
 
 describe('aggregateUsers', () => {
@@ -156,6 +173,14 @@ describe('aggregateUsers', () => {
       { _id: 'Bob', count: 3 },
       { _id: 'Alice', count: 2 },
     ]);
+    done();
+  });
+
+  it('should handle error', async (done) => {
+    models.User.throwErrOn('aggregate', 'itst');
+    const res = await aggregateUsers();
+    expect(res).toBeInstanceOf(Error);
+    expect(res.message).toEqual('itst');
     done();
   });
 });
