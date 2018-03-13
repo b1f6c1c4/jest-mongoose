@@ -1,5 +1,7 @@
 # jest-mongoose
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/b1f6c1c4/jest-mongoose.svg)](https://greenkeeper.io/)
+
 > Mongoose integration test made easy and terse.
 
 This package helps you do mongoose integration test at ease.
