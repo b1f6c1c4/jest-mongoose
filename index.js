@@ -11,6 +11,8 @@ const thrower = (model) => {
   ];
   const verbs2 = [
     'count',
+    'countDocument',
+    'estimatedDocumentCount',
     'find',
     'findOne',
     'findOneAndRemove',
@@ -96,7 +98,7 @@ module.exports = (models, connect) => {
   };
 
   const clearDocuments =
-    () => Promise.all(_.values(models).map((M) => M.remove()));
+    () => Promise.all(_.values(models).map((M) => M.deleteMany()));
 
   if (connect) {
     beforeAll(async (done) => {
@@ -141,7 +143,7 @@ module.exports = (models, connect) => {
   });
 
   const nullCheck = async (M) => {
-    const count = await M.count();
+    const count = await M.countDocuments();
     expect(count).toEqual(0);
   };
 
