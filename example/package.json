@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand --forceExit"
+    "test": "jest --runInBand --forceExit --detectOpenHandles"
   },
   "author": "b1f6c1c4 <b1f6c1c4@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "mongoose": "^5.0.0"
+    "mongoose": "^5.9.6"
   },
   "devDependencies": {
-    "jest-cli": "^22.4.0"
+    "jest-cli": "^25.1.0"
   }
 }
