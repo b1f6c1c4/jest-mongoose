@@ -101,23 +101,20 @@ module.exports = (models, connect) => {
     () => Promise.all(_.values(models).map((M) => M.deleteMany()));
 
   if (connect) {
-    beforeAll(async (done) => {
+    beforeAll(async () => {
       logger.info('Connecting mongoose');
       await connect();
-      done();
     });
   }
 
-  beforeEach(async (done) => {
+  beforeEach(async () => {
     expect.hasAssertions();
     await clearDocuments();
     clearThrowers();
-    done();
   });
 
-  afterAll(async (done) => {
+  afterAll(async () => {
     await clearDocuments();
-    done();
   });
 
   const make = _.mapValues(models, (M) => async (...args) => {

@@ -10,8 +10,7 @@ const {
 } = require('../userManagement');
 
 describe('createUser', () => {
-  // Be sure to use `async (done)` every where!
-  it('should make a new user', async (done) => {
+  it('should make a new user', async () => {
     // Call the function to be tested
     await createUser();
     // Check if the result is correct
@@ -19,11 +18,9 @@ describe('createUser', () => {
       _id: 'the-id',
       name: 'the-name',
     });
-    // NEVER forget to call done()
-    done();
   });
 
-  it('should handle duplication insertion', async (done) => {
+  it('should handle duplication insertion', async () => {
     // Setup database records is simple
     await make.User({
       _id: 'the-id',
@@ -37,29 +34,26 @@ describe('createUser', () => {
       _id: 'the-id',
       name: 'my-name-is-evil',
     });
-    done();
   });
 
-  it('should handle error', async (done) => {
+  it('should handle error', async () => {
     // Tell jest-mongoose to throw an error
     models.User.throwErrOn('save');
     const res = await createUser();
     expect(res).toBeInstanceOf(Error);
     // Check if the error is _the_ error
     expect(res.message).toEqual('jest-mongoose Error');
-    done();
   });
 
-  it('should handle error custom', async (done) => {
+  it('should handle error custom', async () => {
     // You can customize the error message, of course!
     models.User.throwErrOn('save', 'funny');
     const res = await createUser();
     expect(res).toBeInstanceOf(Error);
     expect(res.message).toEqual('funny');
-    done();
   });
 
-  it('should make another user', async (done) => {
+  it('should make another user', async () => {
     await make.User({ _id: 'another' });
     await createUser();
     // Check against two records!
@@ -70,7 +64,6 @@ describe('createUser', () => {
       _id: 'another',
       name: 'default-name', // Don't forget this!
     }]);
-    done();
   });
 });
 
@@ -86,31 +79,28 @@ describe('modifyUser', () => {
     name: 'new-name',
   };
 
-  it('should handle normal case', async (done) => {
+  it('should handle normal case', async () => {
     await make.User(dUser);
     await modifyUser(dArgs);
     // Look at the syntax here!
     await check.User(dUser, 'name', 'new-name');
-    done();
   });
 
-  it('should handle error', async (done) => {
+  it('should handle error', async () => {
     models.User.throwErrOn('findOne', 'not funny');
     const res = await modifyUser(dArgs);
     expect(res).toBeInstanceOf(Error);
     expect(res.message).toEqual('not funny');
-    done();
   });
 
-  it('should handle not found case 1', async (done) => {
+  it('should handle not found case 1', async () => {
     await make.User(dUser);
     // It's also possible to use this syntax in your logic
     await modifyUser(mer(dArgs, 'id', 'non-exist'));
     await check.User(dUser);
-    done();
   });
 
-  it('should handle not found case 2', async (done) => {
+  it('should handle not found case 2', async () => {
     // make.* also accept that syntax
     await make.User(dUser, '_id', 'evil-id');
     await modifyUser(dArgs);
@@ -118,10 +108,9 @@ describe('modifyUser', () => {
     await check.User(dUser, '_id', 'evil-id');
     // Uncomment the following line and see the difference
     // await check.User(dUser);
-    done();
   });
 
-  it('should handle normal case 2', async (done) => {
+  it('should handle normal case 2', async () => {
     // You may use the return value of make.*
     const setup = await make.User([dUser, { _id: 'another-id' }]);
     await modifyUser(dArgs);
@@ -131,29 +120,26 @@ describe('modifyUser', () => {
       { name: 'new-name' },
       , // This comma is REQUIRED!
     ]);
-    done();
   });
 });
 
 describe('deleteUser', () => {
   const dUser = { _id: 'id', name: 'nm' };
 
-  it('should delete an existing user', async (done) => {
+  it('should delete an existing user', async () => {
     await make.User(dUser);
     await deleteUser({ id: 'id' });
     // Either will be ok
     await check.User();
     await check.User([]);
-    done();
   });
 
-  it('should handle error', async (done) => {
+  it('should handle error', async () => {
     await make.User(dUser);
     models.User.throwErrOn('remove', 'itst');
     const res = await deleteUser({ id: 'id' });
     expect(res).toBeInstanceOf(Error);
     expect(res.message).toEqual('itst');
-    done();
   });
 });
 
@@ -166,21 +152,19 @@ describe('aggregateUsers', () => {
     { _id: '5', name: 'Bob' },
   ];
 
-  it('should aggregate', async (done) => {
+  it('should aggregate', async () => {
     await make.User(dUsers);
     const result = await aggregateUsers();
     expect(result).toEqual([
       { _id: 'Bob', count: 3 },
       { _id: 'Alice', count: 2 },
     ]);
-    done();
   });
 
-  it('should handle error', async (done) => {
+  it('should handle error', async () => {
     models.User.throwErrOn('aggregate', 'itst');
     const res = await aggregateUsers();
     expect(res).toBeInstanceOf(Error);
     expect(res.message).toEqual('itst');
-    done();
   });
 });
