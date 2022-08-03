@@ -81,7 +81,7 @@ const thrower = (model) => {
   };
 };
 
-module.exports = (models, connect) => {
+module.exports = (models, connect, disconnect) => {
   _.mapValues(models, (M) => {
     logger.info('Injecting model', M.modelName);
     M.thrower = thrower(M);
@@ -104,6 +104,7 @@ module.exports = (models, connect) => {
     beforeAll(async () => {
       logger.info('Connecting mongoose');
       await connect();
+      logger.info('Connected mongoose');
     });
   }
 
@@ -115,6 +116,11 @@ module.exports = (models, connect) => {
 
   afterAll(async () => {
     await clearDocuments();
+    if (disconnect) {
+      logger.info('Disconnecting mongoose');
+      await disconnect();
+      logger.info('Disconnected mongoose');
+    }
   });
 
   const make = _.mapValues(models, (M) => async (...args) => {

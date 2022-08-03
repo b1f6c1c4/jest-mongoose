@@ -11,9 +11,9 @@ const User = require('../models/users');
 const jestMongoose = require('../../');
 
 // Import db initialization
-const { connect } = require('../mongo');
+const { connect, disconnect } = require('../mongo');
 
 // Magic!
 module.exports = jestMongoose({
   User,
-}, connect);
+}, connect, disconnect);

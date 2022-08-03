@@ -20,3 +20,5 @@ module.exports.connect = () => new Promise((resolve, reject) => {
     reject(e);
   }
 });
+
+module.exports.disconnect = mongoose.disconnect;
