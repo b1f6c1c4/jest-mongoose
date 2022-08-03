@@ -17,7 +17,7 @@ This module requires Jest and Mongoose. Mongoose 5 is supported, while Mongoose 
 ## Installation
 
 ```sh
-$ yarn add --dev jest-mongoose
+$ npm i --save-dev jest-mongoose
 ```
 ## Usage
 
