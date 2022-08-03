@@ -8,11 +8,11 @@ This package helps you do mongoose integration test at ease.
 
 * Easy to use. Terse and intuitive API.
 * MongoDB connection is managed by yourself.
-* No binary dependencies (like `mongodb-download`).
+* No giant binary dependencies like `mongodb-download`.
 
 ## Pre-requisites
 
-This module requires Jest and Mongoose. Mongoose 5 is supported, while Mongoose 4 has not been tested yet.
+This module requires Jest and Mongoose.
 
 ## Installation
 
@@ -28,7 +28,7 @@ const { models, make, mer, check } = require('./bundle');
 const { createUser } = require('../userManagement');
 
 describe('createUser', () => {
-  it('should make a new user', async (done) => {
+  it('should make a new user', async () => {
     // Call the function to be tested
     await createUser();
     // Check if the result is correct
@@ -36,10 +36,9 @@ describe('createUser', () => {
       _id: 'the-id',
       name: 'the-name',
     });
-    done();
   });
 
-  it('should handle duplication insertion', async (done) => {
+  it('should handle duplication insertion', async () => {
     // Setup database records is simple
     await make.User({
       _id: 'the-id',
@@ -53,7 +52,6 @@ describe('createUser', () => {
       _id: 'the-id',
       name: 'my-name-is-evil',
     });
-    done();
   });
 });
 ```
