@@ -15,7 +15,7 @@ module.exports.connect = () => new Promise((resolve, reject) => {
     if (process.env.NODE_ENV !== 'test') {
       console.log(`Connecting ${host}/${dbName}`);
     }
-    mongoose.connect(`mongodb://${host}:27017/${dbName}`).then(resolve, reject);
+    mongoose.connect(`mongodb://${host}/${dbName}`).then(resolve, reject);
   } catch (e) {
     reject(e);
   }
