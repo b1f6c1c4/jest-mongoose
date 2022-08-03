@@ -1,7 +1,6 @@
 # jest-mongoose
 
 [![Appveyor Build](https://img.shields.io/appveyor/build/b1f6c1c4/jest-mongoose?style=flat-square)](https://ci.appveyor.com/project/b1f6c1c4/jest-mongoose)
-[![Appveyor Tests](https://img.shields.io/appveyor/tests/b1f6c1c4/jest-mongoose?style=flat-square)](https://ci.appveyor.com/project/b1f6c1c4/jest-mongoose/build/tests)
 
 > Mongoose integration test made easy and terse.
 
